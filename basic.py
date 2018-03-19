@@ -42,12 +42,14 @@ def setup():
         points.append(randP())
 
 def dist(a, b):
-    return math.sqrt((a[0]-b[0])**2+(a[1]-b[1])**2)
+    return math.sqrt((abs(a[0]-b[0])**2)+(abs(a[1]-b[1])**2))
 
 def move(p):
     choice = 0
     i = 1
     while i < len(points):
+        a = dist(points[choice], actors[p])
+        b = dist(points[i], actors[p])
         if dist(points[choice], actors[p]) < dist(points[i], actors[p]):
             choice = i
         i+=1
@@ -55,8 +57,10 @@ def move(p):
     visited.append(points.pop(choice))
 
 def draw():
-    for point in points:
+    for i, point in enumerate(points):
         pygame.draw.circle(surface, (128, 128, 224), (point[0], point[1]), 2)
+        if i > 0:
+            pygame.draw.line(surface, (128, 128, 224), (points[i-1][0], points[i-1][1]), (point[0], point[1]))
 
     for i, point in enumerate(visited):
         pygame.draw.circle(surface, (224, 128, 128), (point[0], point[1]), 2)
@@ -75,12 +79,12 @@ def draw():
 
 def run():
     state = 0
-    while len(points) > 0:
-        draw()
-        move(state)
-        state = 0 if state else 1
-        pygame.time.wait(1000)
     draw()
+    while len(points) > 0:
+        move(state)
+        draw()
+        pygame.time.wait(100)
+        state = 0 if state else 1
     pygame.time.wait(10000)
 
 
