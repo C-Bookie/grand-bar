@@ -66,6 +66,18 @@ def find_angle(p0,p1,c):    #credits to shaman.sir@stackoverflow
     r = math.acos(temp)
     return 180*(r/math.pi)
 
+def flower(x, y):
+#    return -math.sqrt(x**2+y**2)/math.cos(math.atan(y/x))
+    return math.sqrt(x**2+y**2)*math.sqrt(y**2/x**2+1)
+
+def nHeart(p, a):
+    ag = abs(find_angle(a, actors[p], actors[(p-1)%2])-180)
+    if ag > 90:
+        return flower()
+    else:
+        return math.inf
+
+
 
 def score(p, a):
     ag = abs(find_angle(a, actors[p], actors[(p-1)%2])-180)
@@ -73,8 +85,8 @@ def score(p, a):
 #    return d
 #    return d*(180-ag)
     if ag == 0:
-        return math.inf
-    return d/ag
+        return 0
+    return d*ag
 
 def move(p):
     choice = 0
@@ -107,6 +119,9 @@ def draw():
 
     pygame.draw.line(surface, (128, 224, 128), (actors[0][0], actors[0][1]), (actors[1][0], actors[1][1]))
 
+    paint()
+
+def paint():
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
@@ -133,8 +148,30 @@ def run():
     pygame.time.wait(step*10)
 
 
+def test():
+    global actors
+    actors = [
+        [math.floor(width/4), math.floor(height/2)],
+        [math.floor(width/2), math.floor(height/2)]
+    ]
+    for y in range(height):
+        for x in range(width):
+            p = score(1, (x, y))
+            c = ((p/255)%255, p%255, (p*255)%255)
+            try:
+                surface.set_at((x, y), c)
+            except Exception:
+                print(p)
+    for point in actors:
+        pygame.draw.circle(surface, (224, 224, 128), (point[0], point[1]), 2)
+    paint()
+    while True:
+        pygame.time.wait(100)
+
+
 if __name__ == '__main__':
     init()
+    test()
     while True:
         setup()
         run()
