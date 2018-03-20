@@ -58,14 +58,22 @@ def find_angle(p0,p1,c):    #credits to shaman.sir@stackoverflow
     m = (2*p1c*p0c)
     if m == 0:
         return 0
-    r = math.acos((p1c*p1c+p0c*p0c-p0p1*p0p1)/m)
+    temp = (p1c*p1c+p0c*p0c-p0p1*p0p1)/m
+    if temp < -1:
+        temp = -1
+    elif temp > 1:
+        temp = 1
+    r = math.acos(temp)
     return 180*(r/math.pi)
 
 
 def score(p, a):
     ag = abs(find_angle(a, actors[p], actors[(p-1)%2])-180)
     d = dist(actors[p], a)
+#    return d
 #    return d*(180-ag)
+    if ag == 0:
+        return math.inf
     return d/ag
 
 def move(p):
@@ -97,28 +105,39 @@ def draw():
     for point in actors:
         pygame.draw.circle(surface, (224, 224, 128), (point[0], point[1]), 2)
 
+    pygame.draw.line(surface, (128, 224, 128), (actors[0][0], actors[0][1]), (actors[1][0], actors[1][1]))
+
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
     pygame.display.update()
 
+def totalDist(t):
+    r = 0
+    for i, v in enumerate(t):
+        r+=dist(t[i-1%len(t)], v)
+    return r
 
 def run():
     state = 0
+    step = 100
     draw()
     while len(points) > 0:
-        pygame.time.wait(100)
+        pygame.time.wait(step)
         move(state)
         draw()
         state = 0 if state else 1
-    pygame.time.wait(10000)
+    td = math.floor(totalDist(visited))+1
+    print(str(len(visited))+"\t:"+str(td)+"\t:"+str(len(visited)/td))
+    pygame.time.wait(step*10)
 
 
 if __name__ == '__main__':
     init()
-    setup()
-    run()
+    while True:
+        setup()
+        run()
 
 
 
