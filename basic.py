@@ -9,14 +9,18 @@ import random
 width = 400
 height = 300
 
-points = []
+points = [
+    [100, 200],
+    [100, 250],
+    [50, 200]
+]
 visited = []
 
 density = 1/100
 
 actors = [
-    [0, 0], #Bert
-    [0, 0]  #Elma
+    [10, 20], #Bert
+    [30, 40]  #Elma
 ]
 
 def init():
@@ -50,13 +54,15 @@ def move(p):
     while i < len(points):
         a = dist(points[choice], actors[p])
         b = dist(points[i], actors[p])
-        if dist(points[choice], actors[p]) < dist(points[i], actors[p]):
+        if dist(points[choice], actors[p]) > dist(points[i], actors[p]):
             choice = i
         i+=1
     actors[p] = points[choice]
     visited.append(points.pop(choice))
 
 def draw():
+    surface.fill((32, 32, 32))
+
     for i, point in enumerate(points):
         pygame.draw.circle(surface, (128, 128, 224), (point[0], point[1]), 2)
         if i > 0:
@@ -81,9 +87,9 @@ def run():
     state = 0
     draw()
     while len(points) > 0:
+        pygame.time.wait(100)
         move(state)
         draw()
-        pygame.time.wait(100)
         state = 0 if state else 1
     pygame.time.wait(10000)
 
