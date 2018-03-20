@@ -80,13 +80,14 @@ def nHeart(p, a):
 
 
 def score(p, a):
-    ag = abs(find_angle(a, actors[p], actors[(p-1)%2])-180)
-    d = dist(actors[p], a)
-#    return d
+    ag = find_angle(a, actors[(p-1)%2], actors[p])
+    d0 = dist(actors[p], a)
+    d1 = dist(actors[(p-1)%2], a)
+    return d0*-d1
 #    return d*(180-ag)
     if ag == 0:
         return 0
-    return d*ag
+    return ag**2
 
 def move(p):
     choice = 0
@@ -154,19 +155,26 @@ def test():
         [math.floor(width/4), math.floor(height/2)],
         [math.floor(width/2), math.floor(height/2)]
     ]
+    scale = -1
+    step = 0.01
+    space = 10
+    p=[]
+
     for y in range(height):
+        q=[]
         for x in range(width):
-            p = score(1, (x, y))
-            c = ((p/255)%255, p%255, (p*255)%255)
-            try:
-                surface.set_at((x, y), c)
-            except Exception:
-                print(p)
-    for point in actors:
-        pygame.draw.circle(surface, (224, 224, 128), (point[0], point[1]), 2)
-    paint()
+            q.append(score(1, (x, y)))
+        p.append(q)
+
     while True:
-        pygame.time.wait(100)
+        scale+=step
+        for y in range(height):
+            for x in range(width):
+                surface.set_at((x, y), ((p[y][x]*space**(scale-1))%255, (p[y][x]*space**(scale))%255, (p[y][x]*space**(scale+1))%255))
+        for point in actors:
+            pygame.draw.circle(surface, (224, 224, 128), (point[0], point[1]), 2)
+        paint()
+#        pygame.time.wait(100)
 
 
 if __name__ == '__main__':
