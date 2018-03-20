@@ -30,7 +30,7 @@ def init():
     pygame.display.set_caption("bop")
 
 def randP():
-    return (random.randint(0, width), random.randint(0, height))
+    return [random.randint(0, width), random.randint(0, height)]
 
 def setup():
     global actors
@@ -48,25 +48,46 @@ def setup():
 def dist(a, b):
     return math.sqrt((abs(a[0]-b[0])**2)+(abs(a[1]-b[1])**2))
 
+def find_angle(p0,p1,c):    #credits to shaman.sir@stackoverflow
+    p0c = math.sqrt(math.pow(c[0]-p0[0],2)+ math.pow(c[1]-p0[1],2)) # p0->c (b)
+    p0c = dist(c, p0)
+    p1c = math.sqrt(math.pow(c[0]-p1[0],2)+ math.pow(c[1]-p1[1],2)) # p1->c (a)
+    p1c = dist(c, p1)
+    p0p1 = math.sqrt(math.pow(p1[0]-p0[0],2)+ math.pow(p1[1]-p0[1],2)) # p0->p1 (c)
+    p0p1 = dist(p0, p1)
+    m = (2*p1c*p0c)
+    if m == 0:
+        return 0
+    r = math.acos((p1c*p1c+p0c*p0c-p0p1*p0p1)/m)
+    return 180*(r/math.pi)
+
+
+def score(p, a):
+    ag = abs(find_angle(a, actors[p], actors[(p-1)%2])-180)
+    d = dist(actors[p], a)
+#    return d*(180-ag)
+    return d/ag
+
 def move(p):
     choice = 0
     i = 1
     while i < len(points):
-        a = dist(points[choice], actors[p])
-        b = dist(points[i], actors[p])
-        if dist(points[choice], actors[p]) > dist(points[i], actors[p]):
+        if score(p, points[choice]) > score(p, points[i]):
             choice = i
         i+=1
     actors[p] = points[choice]
-    visited.append(points.pop(choice))
+    if p:
+        visited.append(points.pop(choice))
+    else:
+        visited.insert(0, points.pop(choice))
 
 def draw():
     surface.fill((32, 32, 32))
 
     for i, point in enumerate(points):
         pygame.draw.circle(surface, (128, 128, 224), (point[0], point[1]), 2)
-        if i > 0:
-            pygame.draw.line(surface, (128, 128, 224), (points[i-1][0], points[i-1][1]), (point[0], point[1]))
+#        if i > 0:
+#            pygame.draw.line(surface, (128, 128, 224), (points[i-1][0], points[i-1][1]), (point[0], point[1]))
 
     for i, point in enumerate(visited):
         pygame.draw.circle(surface, (224, 128, 128), (point[0], point[1]), 2)
