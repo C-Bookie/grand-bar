@@ -77,17 +77,17 @@ def nHeart(p, a):
     else:
         return math.inf
 
-
+def ground(n):
+    return math.inf if n == 0 else n
 
 def score(p, a):
-    ag = find_angle(a, actors[(p-1)%2], actors[p])
+#    ag = find_angle(a, actors[(p-1)%2], actors[p])
     d0 = dist(actors[p], a)
     d1 = dist(actors[(p-1)%2], a)
-    return d0*-d1
-#    return d*(180-ag)
-    if ag == 0:
-        return 0
-    return ag**2
+    d1 = ground(d1)
+    return d0/d1
+
+
 
 def move(p):
     choice = 0
@@ -155,7 +155,7 @@ def test():
         [math.floor(width/4), math.floor(height/2)],
         [math.floor(width/2), math.floor(height/2)]
     ]
-    scale = -1
+    scale = 2
     step = 0.01
     space = 10
     p=[]
@@ -179,7 +179,7 @@ def test():
 
 if __name__ == '__main__':
     init()
-    test()
+#    test()
     while True:
         setup()
         run()
