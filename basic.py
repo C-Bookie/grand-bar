@@ -6,8 +6,8 @@ from pygame.locals import *
 import math
 import random
 
-width = 400
-height = 300
+width = 800
+height = 600
 
 points = [
     [100, 200],
@@ -179,7 +179,7 @@ def test():
 
 if __name__ == '__main__':
     init()
-#    test()
+    # test()
     while True:
         setup()
         run()
